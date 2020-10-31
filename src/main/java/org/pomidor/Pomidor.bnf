@@ -1,0 +1,22 @@
+{
+  parserClass="org.pomidor.parser.PomidorParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Pomidor"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.pomidor.psi"
+  psiImplPackage="org.pomidor.psi.impl"
+
+  elementTypeHolderClass="org.pomidor.psi.PomidorTypes"
+  elementTypeClass="org.pomidor.psi.PomidorElementType"
+  tokenTypeClass="org.pomidor.psi.PomidorTokenType"
+
+  psiImplUtilClass="org.pomidor.psi.impl.PomidorPsiImplUtil"
+}
+
+pomidorFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF|TEXT)
+
+property ::= (KEY? SEPARATOR VALUE?) | KEY {methods=[getKey getValue]}

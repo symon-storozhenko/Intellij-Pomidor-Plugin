@@ -1,0 +1,44 @@
+{
+  parserClass="org.pomidor.parser.PomidorParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Pomidor"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.pomidor.psi"
+  psiImplPackage="org.pomidor.psi.impl"
+
+  elementTypeHolderClass="org.pomidor.psi.PomidorTypes"
+  elementTypeClass="org.pomidor.psi.PomidorElementType"
+  tokenTypeClass="org.pomidor.psi.PomidorTokenType"
+
+  psiImplUtilClass="org.pomidor.psi.impl.PomidorPsiImplUtil"
+
+tokens=[
+//    TEXT='regexp:[^ ,:;|\t\f\r\n"\\]+'
+//    ESCAPED_TEXT='regexp:[,:;|\t\r\n]|""|\\"'
+//    ESCAPE_CHARACTER='regexp:\\'
+    SEPARATOR='regexp:[:-]* | [\t\f]+ '
+//    QUOTE='regexp:"'
+    CRLF='regexp:\r\n'
+//    EMPTY_LINE='regexp:^\s+$'
+//    EMPTY_LINE='regexp:^[ \t\n]+'
+//    COMMENT='regexp:!.*(\n)'
+//    FEATURE= "@feature "
+//    DATA= "@data "
+//    URL= '@url '
+//    PRO='regexp:"""'
+//    ACTION='regexp:\*.*(\s|$)'
+//    OBJECT='regexp:#.(^[A-Za-z]+$)'
+    CODE="regexp:.*"
+//    VALUE="regexp:.*"
+
+
+   ]
+
+}
+
+paragraphs ::= paragraph (EMPTY_LINE paragraph)*
+paragraph ::= line (CRLF line)*
+line ::= (marker_line | CODE | COMMENT)*
+marker_line ::= MARKERS SEPARATOR VALUE

@@ -1,0 +1,35 @@
+<idea-plugin>
+    <id>org.pomidor.Plugin</id>
+    <name>Pomidor Plugin</name>
+    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+
+    <description><![CDATA[
+    Pomidor plugin for some cool work and stuff<br>
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="Pomidor File" implementationClass="org.pomidor.PomidorFileType"
+                  fieldName="INSTANCE" language="Pomidor" extensions="pomidor"/>
+
+
+
+<!--        <completion.contributor language="Pomidor"-->
+<!--                                implementationClass="org.pomidor.PomidorCompletionContributor"/>-->
+
+        <colorSettingsPage implementation="org.pomidor.PomidorColorSettingsPage"/>
+        <lang.syntaxHighlighterFactory language="Pomidor"
+                                       implementationClass="org.pomidor.PomidorSyntaxHighlighterFactory"/>
+        <lang.parserDefinition language="Pomidor"
+                               implementationClass="org.pomidor.PomidorParserDefinition"/>
+
+
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
