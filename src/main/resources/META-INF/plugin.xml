@@ -12,7 +12,7 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="Pomidor File" implementationClass="org.pomidor.PomidorFileType"
+        <fileType name="Pomidor file" implementationClass="org.pomidor.PomidorFileType"
                   fieldName="INSTANCE" language="Pomidor" extensions="pomidor"/>
 
 

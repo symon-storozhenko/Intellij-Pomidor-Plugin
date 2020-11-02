@@ -21,7 +21,7 @@ public class PomidorSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey VALUE =
             createTextAttributesKey("SIMPLE_VALUE", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey CODE =
-            createTextAttributesKey("SIMPLE_VALUE", DefaultLanguageHighlighterColors.LABEL);
+            createTextAttributesKey("SIMPLE_CODE", DefaultLanguageHighlighterColors.LABEL);
     public static final TextAttributesKey COMMENT =
             createTextAttributesKey("SIMPLE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
     public static final TextAttributesKey BAD_CHARACTER =

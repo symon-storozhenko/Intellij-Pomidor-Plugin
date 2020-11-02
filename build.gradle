@@ -16,10 +16,10 @@ repositories {
 apply plugin: 'org.jetbrains.intellij'
 intellij {
     //For a full list of IntelliJ IDEA releases, please see https://www.jetbrains.com/intellij-repository/releases.
-    version '2020.Oct.23'
     pluginName 'Pomidor-Plugin'
     updateSinceUntilBuild false
-    plugins 'coverage' //Bundled plugin dependencies
+    plugins += 'coverage' //Bundled plugin dependencies
+    plugins += 'PsiViewer:202-SNAPSHOT'
 }
 
 dependencies {
