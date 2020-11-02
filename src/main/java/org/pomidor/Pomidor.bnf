@@ -13,10 +13,32 @@
   tokenTypeClass="org.pomidor.psi.PomidorTokenType"
 
   psiImplUtilClass="org.pomidor.psi.impl.PomidorPsiImplUtil"
+
+tokens=[
+//    TEXT='regexp:[^ ,:;|\t\f\r\n"\\]+'
+//    ESCAPED_TEXT='regexp:[,:;|\t\r\n]|""|\\"'
+//    ESCAPE_CHARACTER='regexp:\\'
+//    SEPARATOR='regexp:[:-]* | [\t\f]+ '
+//    QUOTE='regexp:"'
+    CRLF='regexp:[\r\n]'
+//    EMPTY_LINE='regexp:^\s+$'
+//    EMPTY_LINE='regexp:^[ \t\n]+'
+//    COMMENT='regexp:!.*(\n)'
+//    FEATURE= "@feature "
+//    DATA= "@data "
+//    URL= '@url '
+//    PRO='regexp:"""'
+//    ACTION='regexp:\*.*(\s|$)'
+//    OBJECT='regexp:#.(^[A-Za-z]+$)'
+    CODE="regexp:.*\{CRLF}"
+//    VALUE="regexp:.*"
+
+
+   ]
+
 }
 
-pomidorFile ::= item_*
-
-private item_ ::= (property|COMMENT|CRLF|TEXT)
-
-property ::= (KEY? SEPARATOR VALUE?) | KEY {methods=[getKey getValue]}
+paragraphs ::= paragraph (EMPTY_LINE paragraph)*
+paragraph ::= line (CRLF line)*
+line ::= (marker_line | CODE | COMMENT)*
+marker_line ::= MARKERS SEPARATOR+ VALUE

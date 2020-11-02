@@ -60,14 +60,31 @@ public class PomidorParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // MARKERS SEPARATOR VALUE
+  // MARKERS SEPARATOR+ VALUE
   public static boolean marker_line(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "marker_line")) return false;
     if (!nextTokenIs(b, MARKERS)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, MARKERS, SEPARATOR, VALUE);
+    r = consumeToken(b, MARKERS);
+    r = r && marker_line_1(b, l + 1);
+    r = r && consumeToken(b, VALUE);
     exit_section_(b, m, MARKER_LINE, r);
+    return r;
+  }
+
+  // SEPARATOR+
+  private static boolean marker_line_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "marker_line_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, SEPARATOR);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, SEPARATOR)) break;
+      if (!empty_element_parsed_guard_(b, "marker_line_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
     return r;
   }
 

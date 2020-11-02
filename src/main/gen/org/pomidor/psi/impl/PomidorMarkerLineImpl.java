@@ -26,10 +26,4 @@ public class PomidorMarkerLineImpl extends ASTWrapperPsiElement implements Pomid
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public PsiElement getSeparator() {
-    return findNotNullChildByType(SEPARATOR);
-  }
-
 }

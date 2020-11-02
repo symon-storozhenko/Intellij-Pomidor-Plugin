@@ -7,7 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface PomidorMarkerLine extends PsiElement {
 
-  @NotNull
-  PsiElement getSeparator();
-
 }
