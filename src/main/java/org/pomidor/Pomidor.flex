@@ -12,6 +12,7 @@ import com.intellij.psi.TokenType;import java.nio.file.Watchable;
 %unicode
 %function advance
 %type IElementType
+%ignorecase
 %eof{  return;
 %eof}
 
@@ -25,35 +26,60 @@ import com.intellij.psi.TokenType;import java.nio.file.Watchable;
 //STRING=(.*)\n
 //VALUE_CHAR= {STRING}*
 MARKER_ID = ("@feature" | "@data" | "@url")
+IDENTIFIER=[^,;\ \t\r\n\f]+ //[A-Za-z_][A-Za-z0-9_]*
 
-CRLF=\R
-WHITE_SPACE=[\ \n\t\f]
-FIRST_VALUE_CHARACTER=[^ \n\f\\] | "\\"{CRLF} | "\\".
-VALUE_CHARACTER=[^\n\f\\] | "\\"{CRLF} | "\\".
-COMMENT=("#"|"!")[^\r\n]*
-SEPARATOR=[:=] | [\f\t]*
-EMPTY_LINE = {CRLF}+
+//CRLF=\R
+WHITE_SPACE=[\ \t]+
+//WHITE_SPACE=[\ \n\t\f]
+//FIRST_VALUE_CHARACTER=[^ \n\f\\] | "\\"{CRLF} | "\\".
+//VALUE_CHARACTER=[^\n\f\\] | "\\"{CRLF} | "\\".
+//COMMENT=("#"|"!")[^\r\n\f]*
+COMMENT="!"[^\r\n\f]*
+SEPARATOR=[,;]
+EOL= (\r|\n|\r\n|\f)
 //KEY_CHARACTER=[^:=\ \n\t\f\\] | "\\ "
 
-%state WAITING_VALUE
+%state MARKER_VALUE
+%state PARAGRAPH
 
 %%
 
-<YYINITIAL> {COMMENT}      { yybegin(YYINITIAL); return PomidorTypes.COMMENT; }
-//<YYINITIAL> {EMPTY_LINE}*      { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+<YYINITIAL> {
+    {WHITE_SPACE}          { return com.intellij.psi.TokenType.WHITE_SPACE; }
+    {EOL}+                 { return PomidorTypes.EOL; }
+    {COMMENT}              { return PomidorTypes.COMMENT; }
 
-<YYINITIAL> {MARKER_ID}{SEPARATOR}+   { yybegin(WAITING_VALUE); return PomidorTypes.MARKERS; }
+    "@feature"             { yybegin(MARKER_VALUE); return PomidorTypes.FEATURE; }
+    "@data"                { yybegin(MARKER_VALUE); return PomidorTypes.DATA; }
+    "@url"                 { yybegin(MARKER_VALUE); return PomidorTypes.URL; }
+
+    {IDENTIFIER}           { yybegin(PARAGRAPH); return PomidorTypes.IDENTIFIER; }
+}
+
+<MARKER_VALUE> {
+    {EOL}+                 { yybegin(YYINITIAL); return PomidorTypes.EOL; }
+    {WHITE_SPACE}          { return com.intellij.psi.TokenType.WHITE_SPACE; }
+    {COMMENT}              { return PomidorTypes.COMMENT; }
+
+    {SEPARATOR}            { return PomidorTypes.SEPARATOR; }
+    {IDENTIFIER}           { return PomidorTypes.IDENTIFIER; }
+}
+
+<PARAGRAPH> {
+    {EOL}{EOL}+            { yybegin(YYINITIAL); return PomidorTypes.EOL; }
+    {WHITE_SPACE}|{EOL}    { return com.intellij.psi.TokenType.WHITE_SPACE; }
+    {COMMENT}              { return PomidorTypes.COMMENT; }
+
+    {SEPARATOR}            { return PomidorTypes.SEPARATOR; }
+    {IDENTIFIER}           { return PomidorTypes.IDENTIFIER; }
+}
+
+//<YYINITIAL> {EMPTY_LINE}*      { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 //<WAITING_VALUE> {SEPARATOR}     {yybegin(WAITING_VALUE); return PomidorTypes.SEPARATOR;}
 //<YYINITIAL> {MARKER_ID}{SEPARATOR}     {yybegin(WAITING_VALUE); return PomidorTypes.SEPARATOR;}
-
-<YYINITIAL> {CRLF}* { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
-
 //<WAITING_VALUE> {MARKER_ID}*   { yybegin(WAITING_VALUE); return PomidorTypes.MARKERS; }
-
-<WAITING_VALUE> {CRLF}{CRLF}
-                | {WHITE_SPACE}  {yybegin(YYINITIAL); return  TokenType.WHITE_SPACE;}
 //<WAITING_VALUE> {WHITE_SPACE}+ { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE; }
-<WAITING_VALUE> {VALUE_CHARACTER}*   { yybegin(YYINITIAL); return PomidorTypes.VALUE; }
-({CRLF}|{WHITE_SPACE})+         { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+//<WAITING_VALUE> {VALUE_CHARACTER}*   { yybegin(YYINITIAL); return PomidorTypes.VALUE; }
 
-[^]                             { return PomidorTypes.CODE; }
+//[^]                             { return PomidorTypes.CODE; }
+[^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }

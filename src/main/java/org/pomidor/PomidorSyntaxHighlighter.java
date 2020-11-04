@@ -46,9 +46,9 @@ public class PomidorSyntaxHighlighter extends SyntaxHighlighterBase {
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(PomidorTypes.SEPARATOR)) {
             return SEPARATOR_KEYS;
-        } else if (tokenType.equals(PomidorTypes.MARKERS)) {
+        } else if (tokenType.equals(PomidorTypes.MARKER)) {
             return KEY_KEYS;
-        } else if (tokenType.equals(PomidorTypes.VALUE)) {
+        } else if (tokenType.equals(PomidorTypes.MARKER_VALUE)) {
             return VALUE_KEYS;
         } else if (tokenType.equals(PomidorTypes.COMMENT)) {
             return COMMENT_KEYS;

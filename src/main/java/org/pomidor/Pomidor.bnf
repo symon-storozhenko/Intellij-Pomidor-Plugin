@@ -12,7 +12,7 @@
   elementTypeClass="org.pomidor.psi.PomidorElementType"
   tokenTypeClass="org.pomidor.psi.PomidorTokenType"
 
-  psiImplUtilClass="org.pomidor.psi.impl.PomidorPsiImplUtil"
+//  psiImplUtilClass="org.pomidor.psi.impl.PomidorPsiImplUtil"
 
 tokens=[
 //    TEXT='regexp:[^ ,:;|\t\f\r\n"\\]+'
@@ -20,7 +20,7 @@ tokens=[
 //    ESCAPE_CHARACTER='regexp:\\'
 //    SEPARATOR='regexp:[:-]* | [\t\f]+ '
 //    QUOTE='regexp:"'
-    CRLF='regexp:[\r\n]'
+//    CRLF='regexp:[\r\n]'
 //    EMPTY_LINE='regexp:^\s+$'
 //    EMPTY_LINE='regexp:^[ \t\n]+'
 //    COMMENT='regexp:!.*(\n)'
@@ -30,15 +30,28 @@ tokens=[
 //    PRO='regexp:"""'
 //    ACTION='regexp:\*.*(\s|$)'
 //    OBJECT='regexp:#.(^[A-Za-z]+$)'
-    CODE="regexp:.*\{CRLF}"
+//    CODE="regexp:.*\{CRLF}"
 //    VALUE="regexp:.*"
 
 
    ]
 
 }
+ file ::= file_element_outer* <<eof>> { pin=1 }
+ private file_element_outer::= file_element
+//   {recoverWhile=root_recover} private root_recover::=!(eol)
 
-paragraphs ::= paragraph (EMPTY_LINE paragraph)*
-paragraph ::= line (CRLF line)*
-line ::= (marker_line | CODE | COMMENT)*
-marker_line ::= MARKERS SEPARATOR+ VALUE
+ private file_element ::=
+                 (comment            |
+                  eol                |
+                  marker             |
+                  paragraph)
+
+marker::= marker_name marker_values {pin=1}
+marker_name ::= feature | data | url
+
+marker_values ::= marker_value (separator marker_value)*
+marker_value ::= identifier
+
+
+paragraph ::= identifier (separator? identifier)*
