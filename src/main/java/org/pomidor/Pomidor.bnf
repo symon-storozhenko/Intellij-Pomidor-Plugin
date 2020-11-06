@@ -50,8 +50,6 @@ tokens=[
 marker::= marker_name marker_values {pin=1}
 marker_name ::= feature | data | url
 
-marker_values ::= marker_value (separator marker_value)*
-marker_value ::= identifier
+marker_values ::= marker_value (punctuation marker_value)*
 
-
-paragraph ::= identifier (separator? identifier)*
+paragraph ::= ((identifier | action) punctuation?)+

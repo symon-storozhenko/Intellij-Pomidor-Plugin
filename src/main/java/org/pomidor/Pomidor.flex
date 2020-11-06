@@ -26,7 +26,8 @@ import com.intellij.psi.TokenType;import java.nio.file.Watchable;
 //STRING=(.*)\n
 //VALUE_CHAR= {STRING}*
 MARKER_ID = ("@feature" | "@data" | "@url")
-IDENTIFIER=[^,;\ \t\r\n\f]+ //[A-Za-z_][A-Za-z0-9_]*
+MARKER_VALUE=[^,;\ \t\r\n\f]+ //[A-Za-z_][A-Za-z0-9_]*
+IDENTIFIER=[^,;!.:\ \t\r\n\f]+ //[A-Za-z_][A-Za-z0-9_]*
 
 //CRLF=\R
 WHITE_SPACE=[\ \t]+
@@ -36,9 +37,13 @@ WHITE_SPACE=[\ \t]+
 //COMMENT=("#"|"!")[^\r\n\f]*
 COMMENT="!"[^\r\n\f]*
 SEPARATOR=[,;]
+PUNCTUATION={SEPARATOR}|[.!:]
 EOL= (\r|\n|\r\n|\f)
 //KEY_CHARACTER=[^:=\ \n\t\f\\] | "\\ "
-
+ACTIONS= "click" | "clicks" | "clicked"
+          | "type" | "types" | "typed"
+          | "displayed" | "not_displayed"
+ACTION= \*?{ACTIONS}
 %state MARKER_VALUE
 %state PARAGRAPH
 
@@ -53,6 +58,7 @@ EOL= (\r|\n|\r\n|\f)
     "@data"                { yybegin(MARKER_VALUE); return PomidorTypes.DATA; }
     "@url"                 { yybegin(MARKER_VALUE); return PomidorTypes.URL; }
 
+    {ACTION}               { yybegin(PARAGRAPH); return PomidorTypes.ACTION; }
     {IDENTIFIER}           { yybegin(PARAGRAPH); return PomidorTypes.IDENTIFIER; }
 }
 
@@ -61,8 +67,8 @@ EOL= (\r|\n|\r\n|\f)
     {WHITE_SPACE}          { return com.intellij.psi.TokenType.WHITE_SPACE; }
     {COMMENT}              { return PomidorTypes.COMMENT; }
 
-    {SEPARATOR}            { return PomidorTypes.SEPARATOR; }
-    {IDENTIFIER}           { return PomidorTypes.IDENTIFIER; }
+    {SEPARATOR}            { return PomidorTypes.PUNCTUATION; }
+    {MARKER_VALUE}         { return PomidorTypes.MARKER_VALUE; }
 }
 
 <PARAGRAPH> {
@@ -70,7 +76,9 @@ EOL= (\r|\n|\r\n|\f)
     {WHITE_SPACE}|{EOL}    { return com.intellij.psi.TokenType.WHITE_SPACE; }
     {COMMENT}              { return PomidorTypes.COMMENT; }
 
-    {SEPARATOR}            { return PomidorTypes.SEPARATOR; }
+    {ACTION}               { return PomidorTypes.ACTION; }
+
+    {PUNCTUATION}          { return PomidorTypes.PUNCTUATION; }
     {IDENTIFIER}           { return PomidorTypes.IDENTIFIER; }
 }
 

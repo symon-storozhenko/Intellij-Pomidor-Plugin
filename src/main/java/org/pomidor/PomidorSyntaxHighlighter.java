@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
 import org.pomidor.psi.PomidorTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +21,8 @@ public class PomidorSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("SIMPLE_KEY", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey VALUE =
             createTextAttributesKey("SIMPLE_VALUE", DefaultLanguageHighlighterColors.STRING);
+    public static final TextAttributesKey ACTION =
+            createTextAttributesKey("ACTION_VALUE", DefaultLanguageHighlighterColors.CONSTANT);
     public static final TextAttributesKey CODE =
             createTextAttributesKey("SIMPLE_CODE", DefaultLanguageHighlighterColors.LABEL);
     public static final TextAttributesKey COMMENT =
@@ -32,8 +35,13 @@ public class PomidorSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] SEPARATOR_KEYS = new TextAttributesKey[]{SEPARATOR};
     private static final TextAttributesKey[] KEY_KEYS = new TextAttributesKey[]{MARKER};
     private static final TextAttributesKey[] VALUE_KEYS = new TextAttributesKey[]{VALUE};
+    private static final TextAttributesKey[] ACTION_KEYS = new TextAttributesKey[]{ACTION};
     private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{COMMENT};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
+
+    private static final TokenSet MARKERS_SET = TokenSet.create(
+            PomidorTypes.FEATURE, PomidorTypes.DATA, PomidorTypes.URL
+    );
 
     @NotNull
     @Override
@@ -44,12 +52,14 @@ public class PomidorSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-        if (tokenType.equals(PomidorTypes.SEPARATOR)) {
+        if (tokenType.equals(PomidorTypes.PUNCTUATION)) {
             return SEPARATOR_KEYS;
-        } else if (tokenType.equals(PomidorTypes.MARKER)) {
+        } else if (MARKERS_SET.contains(tokenType)) {
             return KEY_KEYS;
         } else if (tokenType.equals(PomidorTypes.MARKER_VALUE)) {
             return VALUE_KEYS;
+        } else if (tokenType.equals(PomidorTypes.ACTION)) {
+            return ACTION_KEYS;
         } else if (tokenType.equals(PomidorTypes.COMMENT)) {
             return COMMENT_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
