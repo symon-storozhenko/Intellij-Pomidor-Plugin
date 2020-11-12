@@ -43,6 +43,18 @@ public class PomidorSyntaxHighlighter extends SyntaxHighlighterBase {
             PomidorTypes.FEATURE, PomidorTypes.DATA, PomidorTypes.URL
     );
 
+    private static final TokenSet STATIC_DATA_MARKERS_SET = TokenSet.create(
+            PomidorTypes.STATIC_DATA_LEFT_MARKER, PomidorTypes.STATIC_DATA_RIGHT_MARKER
+    );
+
+    private static final TokenSet DATA_FEED_MARKERS_SET = TokenSet.create(
+            PomidorTypes.DATA_FEED_LEFT_MARKER, PomidorTypes.DATA_FEED_RIGHT_MARKER
+    );
+
+    private static final TokenSet CODE_BLOCK_MARKERS_SET = TokenSet.create(
+            PomidorTypes.CODE_BLOCK_LEFT_MARKER, PomidorTypes.CODE_BLOCK_RIGHT_MARKER
+    );
+
     @NotNull
     @Override
     public Lexer getHighlightingLexer() {
@@ -55,6 +67,14 @@ public class PomidorSyntaxHighlighter extends SyntaxHighlighterBase {
         if (tokenType.equals(PomidorTypes.PUNCTUATION)) {
             return SEPARATOR_KEYS;
         } else if (MARKERS_SET.contains(tokenType)) {
+            return KEY_KEYS;
+        } else if (STATIC_DATA_MARKERS_SET.contains(tokenType)) {
+            return KEY_KEYS;
+        } else if (DATA_FEED_MARKERS_SET.contains(tokenType)) {
+            return KEY_KEYS;
+        } else if (CODE_BLOCK_MARKERS_SET.contains(tokenType)) {
+            return VALUE_KEYS;
+        } else if (tokenType.equals(PomidorTypes.PAGE_OBJECT_MARKER)) {
             return KEY_KEYS;
         } else if (tokenType.equals(PomidorTypes.MARKER_VALUE)) {
             return VALUE_KEYS;

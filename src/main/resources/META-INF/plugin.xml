@@ -13,8 +13,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="Pomidor file" implementationClass="org.pomidor.PomidorFileType"
-                  fieldName="INSTANCE" language="Pomidor" extensions="pomidor"/>
-
+                  fieldName="INSTANCE" language="Pomidor" extensions="pomidor;pmdr"/>
 
 
 <!--        <completion.contributor language="Pomidor"-->

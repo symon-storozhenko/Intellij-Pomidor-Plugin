@@ -26,7 +26,7 @@ tokens=[
 //    COMMENT='regexp:!.*(\n)'
 //    FEATURE= "@feature "
 //    DATA= "@data "
-//    URL= '@url '
+//    url= '@url '
 //    PRO='regexp:"""'
 //    ACTION='regexp:\*.*(\s|$)'
 //    OBJECT='regexp:#.(^[A-Za-z]+$)'
@@ -52,4 +52,8 @@ marker_name ::= feature | data | url
 
 marker_values ::= marker_value (punctuation marker_value)*
 
-paragraph ::= ((identifier | action) punctuation?)+
+paragraph ::= ((identifier | action | page_object | static_data | data_feed | code_block) punctuation?)+
+page_object ::= page_object_marker identifier
+static_data ::= static_data_left_marker (identifier | punctuation)+ static_data_right_marker
+data_feed ::= data_feed_left_marker (identifier | punctuation)+ data_feed_right_marker
+code_block ::= code_block_left_marker code_source code_block_right_marker
