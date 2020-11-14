@@ -29,6 +29,7 @@ ACTIONS= "click" | "clicks" | "clicked"
           | "type" | "types" | "typed"
           | "displayed" | "not_displayed"
 ACTION= \*?{ACTIONS}
+ANY_BUT_TRIPLE_QUOTE= ([^\"] | \"[^\"] | \"\"[^\"])+
 
 %state MARKER_VALUE
 %state PARAGRAPH
@@ -99,7 +100,7 @@ ACTION= \*?{ACTIONS}
 
 <CODE_BLOCK> {
     \"\"\"                 { yybegin(PARAGRAPH); return PomidorTypes.CODE_BLOCK_RIGHT_MARKER; }
-    [^]+ /\"\"\"           { return PomidorTypes.CODE_SOURCE; }
+    {ANY_BUT_TRIPLE_QUOTE} /\"\"\"          { return PomidorTypes.CODE_SOURCE; }
 }
 
 [^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }
