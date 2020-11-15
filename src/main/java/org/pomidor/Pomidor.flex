@@ -30,6 +30,8 @@ ACTIONS= "click" | "clicks" | "clicked"
           | "displayed" | "not_displayed"
 ACTION= \*?{ACTIONS}
 ANY_BUT_TRIPLE_QUOTE= ([^\"] | \"[^\"] | \"\"[^\"])+
+ANY_BUT_CLOSING_SQR_QUOTES= ([^\]\]])+
+
 
 %state MARKER_VALUE
 %state PARAGRAPH
@@ -45,14 +47,17 @@ ANY_BUT_TRIPLE_QUOTE= ([^\"] | \"[^\"] | \"\"[^\"])+
     ^{COMMENT}             { return PomidorTypes.COMMENT; }
 
     "@feature"             { yybegin(MARKER_VALUE); return PomidorTypes.FEATURE; }
+    "@tcname"              { yybegin(MARKER_VALUE); return PomidorTypes.FEATURE; }
+    "@param"               { yybegin(MARKER_VALUE); return PomidorTypes.FEATURE; }
     "@data"                { yybegin(MARKER_VALUE); return PomidorTypes.DATA; }
     "@url"                 { yybegin(MARKER_VALUE); return PomidorTypes.URL; }
+
 
 // first possible item in paragraph
     {ACTION}               { yybegin(PARAGRAPH); return PomidorTypes.ACTION; }
     {PUNCTUATION}          { yybegin(PARAGRAPH); return PomidorTypes.PUNCTUATION; }
     "#" /{IDENTIFIER}      { yybegin(PARAGRAPH); return PomidorTypes.PAGE_OBJECT_MARKER; }
-    "[" /{IDENTIFIER}      { yybegin(STATIC_DATA); return PomidorTypes.STATIC_DATA_LEFT_MARKER; }
+    "[[" /{IDENTIFIER}     { yybegin(STATIC_DATA); return PomidorTypes.STATIC_DATA_LEFT_MARKER; }
     "<<" /{IDENTIFIER}     { yybegin(DATA_FEED); return PomidorTypes.DATA_FEED_LEFT_MARKER; }
     \"\"\" /[^]            { yybegin(CODE_BLOCK); return PomidorTypes.CODE_BLOCK_LEFT_MARKER; }
     {IDENTIFIER}           { yybegin(PARAGRAPH); return PomidorTypes.IDENTIFIER; }
@@ -75,7 +80,7 @@ ANY_BUT_TRIPLE_QUOTE= ([^\"] | \"[^\"] | \"\"[^\"])+
     {ACTION}               { return PomidorTypes.ACTION; }
     {PUNCTUATION}          { return PomidorTypes.PUNCTUATION; }
     "#" /{IDENTIFIER}      { return PomidorTypes.PAGE_OBJECT_MARKER; }
-    "[" /{IDENTIFIER}      { yybegin(STATIC_DATA); return PomidorTypes.STATIC_DATA_LEFT_MARKER; }
+    "[[" /{IDENTIFIER}      { yybegin(STATIC_DATA); return PomidorTypes.STATIC_DATA_LEFT_MARKER; }
     "<<" /{IDENTIFIER}     { yybegin(DATA_FEED); return PomidorTypes.DATA_FEED_LEFT_MARKER; }
     \"\"\" /~(\"\"\")      { yybegin(CODE_BLOCK); return PomidorTypes.CODE_BLOCK_LEFT_MARKER; }
 
@@ -83,12 +88,17 @@ ANY_BUT_TRIPLE_QUOTE= ([^\"] | \"[^\"] | \"\"[^\"])+
 }
 
 <STATIC_DATA> {
-    "]"                    { yybegin(PARAGRAPH); return PomidorTypes.STATIC_DATA_RIGHT_MARKER; }
-    {WHITE_SPACE}|{EOL}    { return com.intellij.psi.TokenType.WHITE_SPACE; }
-    {PUNCTUATION} /"]"     { return PomidorTypes.PUNCTUATION; }
+    "]]"                 { yybegin(PARAGRAPH); return PomidorTypes.STATIC_DATA_RIGHT_MARKER; }
+    {ANY_BUT_CLOSING_SQR_QUOTES} /"]]"          { return PomidorTypes.IDENTIFIER; }
 
-    {IDENTIFIER} /("]"|{PUNCTUATION})       { return PomidorTypes.IDENTIFIER; }
 }
+
+//    "]]"                    { yybegin(PARAGRAPH); return PomidorTypes.STATIC_DATA_RIGHT_MARKER; }
+//    {WHITE_SPACE}|{EOL}    { return com.intellij.psi.TokenType.WHITE_SPACE; }
+//    {PUNCTUATION} /"]]"     { return PomidorTypes.PUNCTUATION; }
+//
+//    {IDENTIFIER} /("]]"|{PUNCTUATION})       { return PomidorTypes.IDENTIFIER; }
+//}
 
 <DATA_FEED> {
     ">>"                   { yybegin(PARAGRAPH); return PomidorTypes.DATA_FEED_RIGHT_MARKER; }
